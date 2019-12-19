@@ -41,7 +41,7 @@ struct ContentView: View {
     func addNewWord() {
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         
-        guard answer.count > 0 else {
+        guard answer.count > 2 else {
             return
         }
         
