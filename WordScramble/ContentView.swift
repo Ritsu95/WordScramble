@@ -18,6 +18,8 @@ struct ContentView: View {
     @State private var errorMessage = ""
     @State private var showingError = false
     
+    @State private var score = 0
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -29,6 +31,8 @@ struct ContentView: View {
                     Image(systemName: "\($0.count).circle")
                     Text($0)
                 }
+                
+                Text("Score for \"\(rootWord.capitalized)\": \(score)")
             }
             .navigationBarTitle(rootWord)
             .navigationBarItems(trailing: Button(action: startGame){
@@ -65,6 +69,7 @@ struct ContentView: View {
         
         usedWords.insert(answer, at: 0)
         newWord = ""
+        score += answer.count
     }
     
     func startGame() {
@@ -74,6 +79,7 @@ struct ContentView: View {
                 String(contentsOf: startWordsURL) {
                 let allWords = startWords.components(separatedBy: "\n")
                 rootWord = allWords.randomElement() ?? "silkworm"
+                score = 0
                 return
             }
         }
