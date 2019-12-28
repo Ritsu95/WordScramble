@@ -18,7 +18,8 @@ struct ContentView: View {
     @State private var errorMessage = ""
     @State private var showingError = false
     
-    @State private var score = 0
+    @State private var totalScore = 0
+    @State private var wordScore = 0
     
     var body: some View {
         NavigationView {
@@ -32,12 +33,24 @@ struct ContentView: View {
                     Text($0)
                 }
                 
-                Text("Score for \"\(rootWord.capitalized)\": \(score)")
+                VStack {
+                    Text("Score for \"\(rootWord.capitalized)\": \(wordScore)")
+                    Text("Total score for the game: \(totalScore)")
+                }
             }
-            .navigationBarTitle(rootWord)
-            .navigationBarItems(trailing: Button(action: startGame){
+            .navigationBarTitle(rootWord.capitalized)
+            .navigationBarItems(trailing: VStack(alignment: .center, spacing: 1.0) {
+                Button(action: restartGame){
+                        Text("Restart")
+                }
+                
+                Spacer()
+                
+                Button(action: startGame){
                     Text("Change word")
+                }
             })
+                
             .onAppear(perform: startGame)
             .alert(isPresented: $showingError) {
                 Alert(title: Text(errorTitle), message: Text(errorMessage), dismissButton: .default(Text("OK")))
@@ -67,9 +80,10 @@ struct ContentView: View {
             return
         }
         
-        usedWords.insert(answer, at: 0)
+        usedWords.insert(answer.capitalized, at: 0)
         newWord = ""
-        score += answer.count
+        totalScore += answer.count
+        wordScore += answer.count
     }
     
     func startGame() {
@@ -79,12 +93,18 @@ struct ContentView: View {
                 String(contentsOf: startWordsURL) {
                 let allWords = startWords.components(separatedBy: "\n")
                 rootWord = allWords.randomElement() ?? "silkworm"
-                score = 0
+                wordScore = 0
                 return
             }
         }
         
         fatalError("Could not load start.txt from bundle.")
+    }
+    
+    func restartGame() {
+        startGame()
+        usedWords.removeAll()
+        totalScore = 0
     }
     
     func isOriginal(word: String) -> Bool {
